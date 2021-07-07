@@ -1,0 +1,29 @@
+/**
+ * Core constants for CacheGrid Distributed In-Memory Engine
+ */
+const EVICTION_POLICIES = {
+  LRU: 'LRU',
+  LFU: 'LFU',
+  FIFO: 'FIFO'
+};
+
+const WRITE_POLICIES = {
+  WRITE_THROUGH: 'WRITE_THROUGH',
+  WRITE_BEHIND: 'WRITE_BEHIND',
+  CACHE_ASIDE: 'CACHE_ASIDE'
+};
+
+const NODE_STATUS = {
+  ALIVE: 'ALIVE',
+  SUSPECT: 'SUSPECT',
+  DEAD: 'DEAD'
+};
+
+module.exports = {
+  EVICTION_POLICIES,
+  WRITE_POLICIES,
+  NODE_STATUS,
+  DEFAULT_VIRTUAL_NODES: 128,
+  DEFAULT_TTL_SECONDS: 3600,
+  MAX_IN_MEMORY_ITEMS: 10000
+};
