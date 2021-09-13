@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: cachegrid-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - cachegrid_mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: cachegrid_distributed
+    networks:
+      - cachegrid-net
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: cachegrid-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - cachegrid_redis_data:/data
+    networks:
+      - cachegrid-net
+
+  cachegrid-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cachegrid-api-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/cachegrid_distributed
+      - REDIS_URL=redis://redis:6379
+      - NODE_ID=node-us-east-01
+      - LOG_LEVEL=info
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - cachegrid-net
+
+volumes:
+  cachegrid_mongo_data:
+  cachegrid_redis_data:
+
+networks:
+  cachegrid-net:
+    driver: bridge
