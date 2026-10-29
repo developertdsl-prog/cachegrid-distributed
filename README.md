@@ -10,36 +10,6 @@
 
 CacheGrid-Distributed is an enterprise-scale distributed caching platform engineered for sub-millisecond data retrieval across clustered server nodes. It features consistent hashing ring partitioning with virtual nodes, an amortized O(1) doubly-linked list LRU eviction engine, singleflight stampede suppression, and asynchronous write-behind persistence.
 
----
-
-## 🏛️ System Architecture
-
-```mermaid
-flowchart TD
-    Client[("Microservice / Application Client")] --> Router["CacheGrid Routing Gateway"]
-    
-    subgraph PartitioningLayer["Consistent Hashing Ring"]
-        Router --> HashRing["Murmur3 Consistent Hash Ring"]
-        HashRing -->|Binary Search Nearest Node| VNode["Virtual Node Map (128 VNodes / Host)"]
-        VNode --> Node1["Cache Node 1 (US-East)"]
-        VNode --> Node2["Cache Node 2 (US-West)"]
-        VNode --> Node3["Cache Node 3 (EU-Central)"]
-    end
-    
-    subgraph StorageLayer["In-Memory LRU Engine & Concurrency"]
-        Node1 & Node2 & Node3 --> LRUEngine["Doubly-Linked List + HashMap LRU"]
-        LRUEngine --> Singleflight["Singleflight Lock (Anti-Stampede)"]
-        Singleflight -->|Cache Miss| BackingDB[("Persistent Backing Store (MongoDB)")]
-    end
-    
-    subgraph AsyncTier["Write-Behind Persistence"]
-        LRUEngine --> DirtyBuffer[("Write-Behind Buffer Queue")]
-        DirtyBuffer --> BatchFlusher["Asynchronous Batch Flusher"]
-        BatchFlusher --> BackingDB
-    end
-```
-
----
 
 ## 🚀 Key Architectural Capabilities
 
